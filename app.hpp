@@ -7,7 +7,6 @@
 
 #include <memory>
 #include <vector>
-#include <vulkan/vulkan_core.h>
 
 namespace lve {
     class App {
@@ -28,14 +27,19 @@ namespace lve {
             void createPipelineLayout();
             void createPipeline();
             void createCommandBuffers();
+            void freeCommandBuffers();
             void drawFrame();
+            void recreateSwapChain();
+            void recordCommandBuffer(int imageIndex);
 
-            LveWindow lveWindow{WIDTH, HEIGHT, "Vulkan Test!"};
+            LveWindow lveWindow{WIDTH, HEIGHT, "Sierpinski stuff!"};
             LveDevice lveDevice{lveWindow};
-            LveSwapChain lveSwapChain{lveDevice, lveWindow.getExtent()};
+            
+            std::unique_ptr<LveSwapChain> lveSwapChain;
             std::unique_ptr<LvePipeline> lvePipeline;
 
             VkPipelineLayout pipelineLayout;
+            
             std::vector<VkCommandBuffer> commandBuffers;
             std::unique_ptr<LveModel> lveModel;
     };
