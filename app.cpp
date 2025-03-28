@@ -41,9 +41,9 @@ namespace lve {
             LveModel::Vertex v2 = verts[i+1];
             LveModel::Vertex v3 = verts[i+2];
 
-            LveModel::Vertex v12 = {(v1.position+v2.position) * 0.5f};
-            LveModel::Vertex v13 = {(v1.position+v3.position) * 0.5f};
-            LveModel::Vertex v23 = {(v2.position+v3.position) * 0.5f};
+            LveModel::Vertex v12 = {(v1.position+v2.position) * 0.5f, (v1.color+v2.color) * 0.5f};
+            LveModel::Vertex v13 = {(v1.position+v3.position) * 0.5f, (v1.color+v3.color) * 0.5f};
+            LveModel::Vertex v23 = {(v2.position+v3.position) * 0.5f, (v2.color+v3.color) * 0.5f};
 
             outverts.push_back(v1);
             outverts.push_back(v12);
@@ -66,9 +66,9 @@ namespace lve {
 
     std::vector<LveModel::Vertex> App::Sierpinski(int iter) {
         std::vector<LveModel::Vertex> verts {
-            {{0.0f, -0.5f}},
-            {{0.5f, 0.5f}},
-            {{-0.5f, 0.5f}}
+            {{0.0f, -0.8f}, {1.0f,0.0f,0.0f}},
+            {{0.8f, 0.8f}, {0.0f,1.0f,0.0f}},
+            {{-0.8f, 0.8f}, {0.0f,0.0f,1.0f}}
         };
 
         for (int i = 0; i < iter; i++) {
@@ -79,7 +79,7 @@ namespace lve {
     }
 
     void App::loadModels() {
-        std::vector<LveModel::Vertex> vertices = Sierpinski(3); 
+        std::vector<LveModel::Vertex> vertices = Sierpinski(6); 
 
         lveModel = std::make_unique<LveModel>(lveDevice, vertices);
     }

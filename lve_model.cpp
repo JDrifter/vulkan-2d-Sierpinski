@@ -2,7 +2,9 @@
 
 // std
 #include <cassert>
+#include <cstddef>
 #include <cstring>
+#include <vulkan/vulkan_core.h>
 
 namespace lve {
 
@@ -44,18 +46,24 @@ void LveModel::bind(VkCommandBuffer commandBuffer) {
 
 std::vector<VkVertexInputBindingDescription> LveModel::Vertex::getBindingDescriptions() {
   std::vector<VkVertexInputBindingDescription> bindingDescriptions(1);
-  bindingDescriptions[0].binding = 0;
-  bindingDescriptions[0].stride = sizeof(Vertex);
+  bindingDescriptions[0].binding = 0;             //lo stride non cambia quando aggiungo dati come il colore alla posizione dei vertici
+  bindingDescriptions[0].stride = sizeof(Vertex); //questo perché sto scrivendo in memoria con interleaving anziché a insiemi
   bindingDescriptions[0].inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
   return bindingDescriptions;
 }
 
 std::vector<VkVertexInputAttributeDescription> LveModel::Vertex::getAttributeDescriptions() {
-  std::vector<VkVertexInputAttributeDescription> attributeDescriptions(1);
+  std::vector<VkVertexInputAttributeDescription> attributeDescriptions(2);
   attributeDescriptions[0].binding = 0;
   attributeDescriptions[0].location = 0;
-  attributeDescriptions[0].format = VK_FORMAT_R32G32_SFLOAT;
-  attributeDescriptions[0].offset = 0;
+  attributeDescriptions[0].format = VK_FORMAT_R32G32_SFLOAT; // pos vec2
+  attributeDescriptions[0].offset = offsetof(Vertex, position); // in realtà per adesso è 0 ma utile per correttezza e modifiche future
+
+
+  attributeDescriptions[1].binding = 0;
+  attributeDescriptions[1].location = 1; //nomi delle variabili intercambiabili, conta la location in memoria
+  attributeDescriptions[1].format = VK_FORMAT_R32G32B32_SFLOAT; // color vec3
+  attributeDescriptions[1].offset = offsetof(Vertex, color); // distanza in memoria
   return attributeDescriptions;
 }
 
