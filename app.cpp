@@ -1,15 +1,19 @@
-# include "app.hpp"
+#include "app.hpp"
+#include "lve_device.hpp"
+#include "lve_model.hpp"
 #include "lve_pipeline.hpp"
 #include "lve_swap_chain.hpp"
 #include "lve_window.hpp"
+
 #include <array>
-#include <cstdint>
+#include <cstdio>
 #include <memory>
 #include <stdexcept>
-#include <vulkan/vulkan_core.h>
+#include <vector>
 
 namespace lve {
     App::App() {
+        loadModels();
         createPipelineLayout();
         createPipeline();
         createCommandBuffers();
@@ -28,6 +32,57 @@ namespace lve {
         vkDeviceWaitIdle(lveDevice.device());
     }
 
+
+    std::vector<LveModel::Vertex> App::Sierpinski_trig(std::vector<LveModel::Vertex> verts) {
+        std::vector<LveModel::Vertex> outverts;
+
+        for (int i = 0; i < verts.size(); i+=3) {
+            LveModel::Vertex v1 = verts[i];
+            LveModel::Vertex v2 = verts[i+1];
+            LveModel::Vertex v3 = verts[i+2];
+
+            LveModel::Vertex v12 = {(v1.position+v2.position) * 0.5f};
+            LveModel::Vertex v13 = {(v1.position+v3.position) * 0.5f};
+            LveModel::Vertex v23 = {(v2.position+v3.position) * 0.5f};
+
+            outverts.push_back(v1);
+            outverts.push_back(v12);
+            outverts.push_back(v13);
+
+            outverts.push_back(v2);
+            outverts.push_back(v12);
+            outverts.push_back(v23);
+
+            outverts.push_back(v3);
+            outverts.push_back(v13);
+            outverts.push_back(v23);
+
+            // outverts.push_back(v12); nascondo il triangolo centrale per fare effettivamente vedere cosa succede
+            // outverts.push_back(v13); in futuro ogni triangolo potrebbe essere stampato con colore diverso
+            // outverts.push_back(v23);
+        }
+        return outverts;
+    }
+
+    std::vector<LveModel::Vertex> App::Sierpinski(int iter) {
+        std::vector<LveModel::Vertex> verts {
+            {{0.0f, -0.5f}},
+            {{0.5f, 0.5f}},
+            {{-0.5f, 0.5f}}
+        };
+
+        for (int i = 0; i < iter; i++) {
+            verts = Sierpinski_trig(verts);
+        }
+
+        return verts;
+    }
+
+    void App::loadModels() {
+        std::vector<LveModel::Vertex> vertices = Sierpinski(3); 
+
+        lveModel = std::make_unique<LveModel>(lveDevice, vertices);
+    }
 
     void App::createPipelineLayout() {
         VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
@@ -92,7 +147,8 @@ namespace lve {
             vkCmdBeginRenderPass(commandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
             lvePipeline->bind(commandBuffers[i]);
-            vkCmdDraw(commandBuffers[i], 3, 1, 0, 0);
+            lveModel->bind(commandBuffers[i]);
+            lveModel->draw(commandBuffers[i]);
 
             vkCmdEndRenderPass(commandBuffers[i]);
             if (vkEndCommandBuffer(commandBuffers[i]) != VK_SUCCESS) {
