@@ -3,8 +3,6 @@ set up your env for your OS with the [official docs](https://vulkan-tutorial.com
 
 then run 
 ```cmake
-  make
-  make shaders
   make test
 ```
 

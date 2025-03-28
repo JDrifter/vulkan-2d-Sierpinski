@@ -41,9 +41,9 @@ namespace lve {
             LveModel::Vertex v2 = verts[i+1];
             LveModel::Vertex v3 = verts[i+2];
 
-            LveModel::Vertex v12 = {(v1.position+v2.position) * 0.5f, (v1.color+v2.color) * 0.5f};
-            LveModel::Vertex v13 = {(v1.position+v3.position) * 0.5f, (v1.color+v3.color) * 0.5f};
-            LveModel::Vertex v23 = {(v2.position+v3.position) * 0.5f, (v2.color+v3.color) * 0.5f};
+            LveModel::Vertex v12 = {(v1.position+v2.position) * 0.5f, (v1.color+v3.color) * 0.5f};
+            LveModel::Vertex v13 = {(v1.position+v3.position) * 0.5f, (v2.color+v3.color) * 0.5f};
+            LveModel::Vertex v23 = {(v2.position+v3.position) * 0.5f, (v1.color+v2.color) * 0.5f};
 
             outverts.push_back(v1);
             outverts.push_back(v12);
@@ -57,9 +57,9 @@ namespace lve {
             outverts.push_back(v13);
             outverts.push_back(v23);
 
-            // outverts.push_back(v12); nascondo il triangolo centrale per fare effettivamente vedere cosa succede
-            // outverts.push_back(v13); in futuro ogni triangolo potrebbe essere stampato con colore diverso
-            // outverts.push_back(v23);
+            outverts.push_back(v12); 
+            outverts.push_back(v13); 
+            outverts.push_back(v23);
         }
         return outverts;
     }
